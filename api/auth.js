@@ -27,6 +27,7 @@ router.post("/auth/signup", async (req, res) => {
         "password": hashedPassword,
         "contact": req.body.contact,
         "dob": req.body.dob,
+        "role": "student",
         "created_at": new Date(),
         "updated_at": new Date()
       }
