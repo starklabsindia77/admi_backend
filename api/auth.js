@@ -156,7 +156,7 @@ router.put("/auth/user", verifyToken, async (req, res) => {
 /* Login Route */
 router.post("/auth/login", async (req, res) => {
   try {
-    // let foundUser = await User.findOne({ email: req.body.email });
+
     let foundUser = {};
     MongoClient.connect(db_url, function (err, client) {
       if (err) console.log('err', err.message);
@@ -165,7 +165,6 @@ router.post("/auth/login", async (req, res) => {
       console.log('user', req.body.email)
       collection.findOne({ email: req.body.email }, async (err, result) => {
         if (err) console.log('err', err);
-        // console.log('result', result);
         foundUser = result;
         console.log('found user123', foundUser);
         if (!foundUser) {
