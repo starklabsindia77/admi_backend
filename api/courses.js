@@ -102,7 +102,7 @@ router.post('/course_manager', upload.single('images'), verifyToken, async (req,
         }
         MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
-            const db = client.db("vyapaari");
+            const db = client.db("admission");
             const collection = db.collection('course_manager');
 
             collection.insertOne(body, (err, result) => {
@@ -125,7 +125,7 @@ router.get('/courses', verifyToken, async (req, res) => {
         console.log('course call')
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
-            const db = client.db("vyapaari");
+            const db = client.db("admission");
             const collection = db.collection('course_manager');
 
             await collection.find({}).toArray((err, result) => {
@@ -154,7 +154,7 @@ router.get('/courses/:guid', verifyToken, async (req, res) => {
         // console.log("insert query", result.recordset);
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
-            const db = client.db("vyapaari");
+            const db = client.db("admission");
             const collection = db.collection('course_manager');
 
             await collection.find({ guid: reqData }).toArray((err, result) => {
@@ -177,7 +177,7 @@ router.put('/courses/:guid', verifyToken, async (req, res) => {
         let foundUser = {}
         MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
-            const db = client.db("vyapaari");
+            const db = client.db("admission");
             const collection = db.collection('course_manager');
 
             collection.findOne({ guid: reqGuid }, (err, result) => {
@@ -224,7 +224,7 @@ router.put('/courses/:guid', verifyToken, async (req, res) => {
                     }
                     MongoClient.connect(db_url, async function (err, client) {
                         if (err) console.log('err', err);
-                        const db = client.db("vyapaari");
+                        const db = client.db("admission");
                         const collection = db.collection('course_manager');
 
                         await collection.updateOne({ guid: reqGuid }, body, (err, result) => {

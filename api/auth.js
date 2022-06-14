@@ -27,14 +27,14 @@ router.post("/auth/signup", async (req, res) => {
         "password": hashedPassword,
         "contact": req.body.contact,
         "dob": req.body.dob,
-        "role": "student",
+        "role": req.body.role,
         "created_at": new Date(),
         "updated_at": new Date()
       }
 
       MongoClient.connect(db_url, function (err, client) {
         if (err) console.log('err', err);
-        const db = client.db("vyapaari");
+        const db = client.db("admission");
         const collection = db.collection('User');
 
         collection.insertOne(user_body, (err, result) => {
@@ -73,7 +73,7 @@ router.get("/auth/user", verifyToken, async (req, res) => {
     let foundUser = {};
     MongoClient.connect(db_url, function (err, client) {
       if (err) console.log('err', err);
-      const db = client.db("vyapaari");
+      const db = client.db("admission");
       const collection = db.collection('User');
 
       collection.findOne({ _id: req.decoded._id }, (err, result) => {
@@ -105,7 +105,7 @@ router.put("/auth/user", verifyToken, async (req, res) => {
     let foundUser = {}
     MongoClient.connect(db_url, function (err, client) {
       if (err) console.log('err', err);
-      const db = client.db("vyapaari");
+      const db = client.db("admission");
       const collection = db.collection('User');
 
       collection.findOne({ _id: req.decoded._id }, async (err, result) => {
@@ -125,7 +125,7 @@ router.put("/auth/user", verifyToken, async (req, res) => {
           //   await foundUser.save();
           MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
-            const db = client.db("vyapaari");
+            const db = client.db("admission");
             const collection = db.collection('User');
             const body = { $set: { name: foundUser.name, email: foundUser.email, password: foundUser.password, contact: foundUser.contact } }
             collection.updateOne({ _id: req.decoded._id }, body, (err, result) => {
@@ -160,7 +160,7 @@ router.post("/auth/login", async (req, res) => {
     let foundUser = {};
     MongoClient.connect(db_url, function (err, client) {
       if (err) console.log('err', err.message);
-      const db = client.db("vyapaari");
+      const db = client.db("admission");
       const collection = db.collection('User');
       console.log('user', req.body.email)
       collection.findOne({ email: req.body.email }, async (err, result) => {
