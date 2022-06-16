@@ -41,19 +41,20 @@ router.post("/auth/signup", async (req, res) => {
           if (err) console.log('err', err);
           console.log('result', result);
           inserted = true;
+          if (inserted) {
+            let token = jwt.sign(user_body, config.SECRET, {
+              expiresIn: 604800 // 1 week
+            });
+
+            res.json({
+              success: true,
+              token: token,
+              message: "Successfully created a new user"
+            });
+          }
         })
       });
-      if (inserted) {
-        let token = jwt.sign(user_body, config.SECRET, {
-          expiresIn: 604800 // 1 week
-        });
 
-        res.json({
-          success: true,
-          token: token,
-          message: "Successfully created a new user"
-        });
-      }
 
     } catch (err) {
       res.status(500).json({
@@ -156,7 +157,7 @@ router.put("/auth/user", verifyToken, async (req, res) => {
 /* Login Route */
 router.post("/auth/login", async (req, res) => {
   try {
-    
+
     let foundUser = {};
     MongoClient.connect(db_url, function (err, client) {
       if (err) console.log('err', err.message);
