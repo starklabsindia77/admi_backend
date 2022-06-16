@@ -18,5 +18,5 @@ module.exports = {
     AWS_BUCKET_NAME: "productallimages",
     AWS_ACCESS_KEY_ID: "AKIA5C5IQ2J3TC5JTSOU",
     AWS_ACCESS_KEY_SECRET: "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",
-    SECRET: process.env.SECRET
+    SECRET: "Noki@lumi@52"
 }
