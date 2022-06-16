@@ -156,7 +156,7 @@ router.put("/auth/user", verifyToken, async (req, res) => {
 /* Login Route */
 router.post("/auth/login", async (req, res) => {
   try {
-
+    
     let foundUser = {};
     MongoClient.connect(db_url, function (err, client) {
       if (err) console.log('err', err.message);
