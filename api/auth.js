@@ -180,7 +180,7 @@ router.post("/auth/login", async (req, res) => {
               expiresIn: 604800 // 1 week
             });
 
-            res.json({ success: true, token: token });
+            res.json({ success: true, token: token, user: foundUser });
           } else {
             res.status(403).json({
               success: false,
