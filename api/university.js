@@ -80,11 +80,11 @@ router.post('/university/add', verifyToken, async (req, res) => {
         const body = {
             "guid": guid,
             "name": reqData.name,
-            "studyLevel ": reqData.country,
+            "country": reqData.country,
             "state": reqData.state,
             "city": reqData.city,
-            "website_url": reqData.website_url,
             "description": reqData.description,
+            "short_description": reqData.short_description,
             "created_at": new Date(),
             "updated_at": new Date(),
             "status": true
@@ -178,11 +178,10 @@ router.put('/university/:guid', verifyToken, async (req, res) => {
                 console.log('result', result);
                 foundUser = result;
                 if (foundUser) {
-                    if (req.body.name) foundUser.universityname = req.body.name;
+                    if (req.body.name) foundUser.name = req.body.name;
                     if (req.body.city) foundUser.city = req.body.city;
                     if (req.body.state) foundUser.state = req.body.state;
                     if (req.body.country) foundUser.country = req.body.country;
-                    if (req.body.website_url) foundUser.website_url = req.body.website_url;
                     if (req.body.description) foundUser.description = req.body.description;
                     if (req.body.short_description) foundUser.short_description = req.body.short_description;
                     const body = {
@@ -191,7 +190,6 @@ router.put('/university/:guid', verifyToken, async (req, res) => {
                             "city": foundUser.city,
                             "state": foundUser.state,
                             "country": foundUser.country,
-                            "website_url": foundUser.website_url,
                             "description": foundUser.description,
                             "short_description": foundUser.short_description,
                             "updated_at": new Date()

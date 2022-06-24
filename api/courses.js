@@ -39,7 +39,7 @@ const s3 = new AWS.S3({
 })
 
 // ADD Courses 
-router.post('/university/add', verifyToken, async (req, res) => {
+router.post('/courses/add', verifyToken, async (req, res) => {
     let reqData = req.body;
     var guidValue = Guid.create();
     console.log(reqData);
@@ -78,12 +78,38 @@ router.post('/university/add', verifyToken, async (req, res) => {
         const body = {
             "guid": guid,
             "name": reqData.name,
-            "country": reqData.country,
-            "state": reqData.state,
-            "city": reqData.city,
+            "applicationFees": reqData.applicationFees,
+            "studyLevel": reqData.studyLevel,
+            "studyArea ": reqData.studyArea,
+            "initialDeposit": reqData.initialDeposit,
+            "averageFees": reqData.averageFess,
+            "intake": reqData.intake,
+            "interviewRequired": reqData.interviewRequired,
+            "interviewStage": reqData.interviewStage,
+            "minimumAcedemicScore": reqData.minimumAcedemicScore,
+            "best_4_subject_percentage": reqData.best_4_subject_percentage,
+            "minimum_graduation_age": reqData.minimum_graduation_age,
+            "numberofBacklogAccepted": reqData.numberOfBacklogAccepted,
+            "gap_acceptable": reqData.gap_acceptable,
+            "priority": reqData.priority,
+            "withoutIelts": reqData.withoutIelts,
+            "withoutIeltsEnglish": reqData.withoutIeltsEnglish,
+            "IeltsOverall": reqData.IeltsOverall,
+            "IeltsNotLessThan": reqData.IeltsNotLessThan,
+            "UKVIIeltsOverall": reqData.UKVIIeltsOverall,
+            "UKVIIeltsNotlessthan": reqData.UKVIIeltsNotlessthan,
+            "UKVI_PTE": reqData.UKVI_PTE,
+            "PTEScore": reqData.PTEScore,
+            "PTENotlessthan": reqData.PTENotLessThan,
+            "Duolingo": reqData.Duolingo,
+            "TOFEL": reqData.TOFEL,
+            "GRE": reqData.GRE,
+            "Scholarship": reqData.Scholarship,
+            "Remarks_Ristrictions": reqData.Remarks,
+            "TATforOfferletter": reqData.TAT,
             "website_url": reqData.website_url,
             "description": reqData.description,
-            "short_description": reqData.short_description,
+            "university": reqData.university,
             "created_at": new Date(),
             "updated_at": new Date(),
             "status": true
@@ -91,7 +117,7 @@ router.post('/university/add', verifyToken, async (req, res) => {
         MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('university');
+            const collection = db.collection('courses');
 
             collection.insertOne(body, (err, result) => {
                 if (err) console.log('err', err);
@@ -108,7 +134,111 @@ router.post('/university/add', verifyToken, async (req, res) => {
     }
 })
 // update Courses
+router.put('/courses/:guid', verifyToken, async (req, res) => {
+    let reqGuid = req.params.guid;
+    let data = req.body
+    try {
+        let foundCourses = {}
+        MongoClient.connect(db_url, function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('courses');
 
+            collection.findOne({ guid: reqGuid }, (err, result) => {
+                if (err) console.log('err', err);
+                console.log('result', result);
+                foundCourses = result;
+                if (foundCourses) {
+                    if (data.name) foundCourses.name = data.name;
+                    if (data.applicationFees) foundCourses.applicationFees = data.applicationFees;
+                    if (data.studyLevel) foundCourses.studyLevel = data.studyLevel;
+                    if (data.studyArea) foundCourses.studyArea = data.studyArea;
+                    if (data.initialDeposit) foundCourses.initialDeposit = data.initialDeposit;
+                    if (data.averageFees) foundCourses.averageFess = data.averageFess;
+                    if (data.intake) foundCourses.intake = data.intake;
+                    if (data.interviewRequired) foundCourses.interviewRequired = data.interviewRequired;
+                    if (data.interviewStage) foundCourses.interviewStage = data.interviewStage;
+                    if (data.minimumAcedemicScore) foundCourses.minimumAcedemicScore = data.minimumAcedemicScore;
+                    if (data.best_4_subject_percentage) foundCourses.best_4_subject_percentage = data.best_4_subject_percentage;
+                    if (data.minimum_graduation_age) foundCourses.minimum_graduation_age = data.minimum_graduation_age;
+                    if (data.numberofBacklogAccepted) foundCourses.numberOfBacklogAccepted = data.numberOfBacklogAccepted;
+                    if (data.gap_acceptable) foundCourses.gap_acceptable = data.gap_acceptable;
+                    if (data.priority) foundCourses.priority = data.priority;
+                    if (data.withoutIelts) foundCourses.withoutIelts = data.withoutIelts;
+                    if (data.withoutIeltsEnglish) foundCourses.withoutIeltsEnglish = data.withoutIeltsEnglish;
+                    if (data.IeltsOverall) foundCourses.IeltsOverall = data.IeltsOverall;
+                    if (data.IeltsNotLessThan) foundCourses.IeltsNotLessThan = data.IeltsNotLessThan;
+                    if (data.UKVIIeltsOverall) foundCourses.UKVIIeltsOverall = data.UKVIIeltsOverall;
+                    if (data.UKVIIeltsNotlessthan) foundCourses.UKVIIeltsNotlessthan = data.UKVIIeltsNotlessthan;
+                    if (data.UKVI_PTE) foundCourses.UKVI_PTE = data.UKVI_PTE;
+                    if (data.PTEScore) foundCourses.PTEScore = data.PTEScore;
+                    if (data.PTENotlessthan) foundCourses.PTENotLessThan = data.PTENotLessThan;
+                    if (data.Duolingo) foundCourses.Duolingo = data.Duolingo;
+                    if (data.TOFEL) foundCourses.TOFEL = data.TOFEL;
+                    if (data.GRE) foundCourses.GRE = data.GRE;
+                    if (data.Scholarship) foundCourses.Scholarship = data.Scholarship;
+                    if (data.Remarks_Ristrictions) foundCourses.Remarks = data.Remarks;
+                    if (data.TATforOfferletter) foundCourses.TAT = data.TAT;
+                    if (data.website_url) foundCourses.website_url = data.website_url;
+                    if (data.description) foundCourses.description = data.description;
+                    const body = {
+                        $set: {
+                            "name": foundCourses.name,
+                            "applicationFees": foundCourses.applicationFees,
+                            "studyLevel": foundCourses.studyLevel,
+                            "studyArea ": foundCourses.studyArea,
+                            "initialDeposit": foundCourses.initialDeposit,
+                            "averageFees": foundCourses.averageFess,
+                            "intake": foundCourses.intake,
+                            "interviewRequired": foundCourses.interviewRequired,
+                            "interviewStage": foundCourses.interviewStage,
+                            "minimumAcedemicScore": foundCourses.minimumAcedemicScore,
+                            "best_4_subject_percentage": foundCourses.best_4_subject_percentage,
+                            "minimum_graduation_age": foundCourses.minimum_graduation_age,
+                            "numberofBacklogAccepted": foundCourses.numberOfBacklogAccepted,
+                            "gap_acceptable": foundCourses.gap_acceptable,
+                            "priority": foundCourses.priority,
+                            "withoutIelts": foundCourses.withoutIelts,
+                            "withoutIeltsEnglish": foundCourses.withoutIeltsEnglish,
+                            "IeltsOverall": foundCourses.IeltsOverall,
+                            "IeltsNotLessThan": foundCourses.IeltsNotLessThan,
+                            "UKVIIeltsOverall": foundCourses.UKVIIeltsOverall,
+                            "UKVIIeltsNotlessthan": foundCourses.UKVIIeltsNotlessthan,
+                            "UKVI_PTE": foundCourses.UKVI_PTE,
+                            "PTEScore": foundCourses.PTEScore,
+                            "PTENotlessthan": foundCourses.PTENotLessThan,
+                            "Duolingo": foundCourses.Duolingo,
+                            "TOFEL": foundCourses.TOFEL,
+                            "GRE": foundCourses.GRE,
+                            "Scholarship": foundCourses.Scholarship,
+                            "Remarks_Ristrictions": foundCourses.Remarks,
+                            "TATforOfferletter": foundCourses.TAT,
+                            "website_url": foundCourses.website_url,
+                            "description": foundCourses.description,
+                            "university": foundCourses.university,
+                            "updated_at": new Date()
+                        }
+                    }
+
+                    collection.updateOne({ guid: reqGuid }, body, (err, result) => {
+                        if (err) console.log('err', err);
+                        console.log('result', result);
+                        res.send({ error: null, result });
+                    })
+
+                }
+            })
+        });
+
+
+
+        // res.send({ error: null, result: result.recordset});
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
 // get All Courses
 router.get('/courses', verifyToken, async (req, res) => {
     try {
