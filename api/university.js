@@ -1,13 +1,14 @@
 const router = require('express').Router();;
 const verifyToken = require("../middlewares/verify-token");
-
+// const moment = require("moment");
 var Guid = require('guid');
 const { ObjectId, MongoClient } = require('mongodb');
-
+// const _ = require('lodash');
+// const cors = require('cors')
 var Promise = require("bluebird");
 
 const config = require('../key');
-
+// const fs = require('fs');
 const AWS = require('aws-sdk');
 const multer = require('multer');
 Promise.longStackTraces();
@@ -38,7 +39,8 @@ const s3 = new AWS.S3({
     secretAccessKey: config.AWS_ACCESS_KEY_SECRET       // secretAccessKey is also store in .env file
 })
 
-// ADD Courses 
+// add university
+
 router.post('/university/add', verifyToken, async (req, res) => {
     let reqData = req.body;
     var guidValue = Guid.create();
@@ -78,12 +80,11 @@ router.post('/university/add', verifyToken, async (req, res) => {
         const body = {
             "guid": guid,
             "name": reqData.name,
-            "country": reqData.country,
+            "studyLevel ": reqData.country,
             "state": reqData.state,
             "city": reqData.city,
             "website_url": reqData.website_url,
             "description": reqData.description,
-            "short_description": reqData.short_description,
             "created_at": new Date(),
             "updated_at": new Date(),
             "status": true
@@ -107,15 +108,16 @@ router.post('/university/add', verifyToken, async (req, res) => {
         return { error: error.message, result: null }
     }
 })
-// update Courses
 
-// get All Courses
-router.get('/courses', verifyToken, async (req, res) => {
+// get  all University
+
+router.get('/university', verifyToken, async (req, res) => {
     try {
+        console.log('course call')
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('courses');
+            const collection = db.collection('university');
 
             await collection.find({ status: true }).toArray((err, result) => {
                 if (err) console.log('err', err);
@@ -135,14 +137,18 @@ router.get('/courses', verifyToken, async (req, res) => {
     }
 })
 
-// get single courses
-router.get('/courses/:guid', verifyToken, async (req, res) => {
+// get single University
+router.get('/university/:guid', verifyToken, async (req, res) => {
     let reqData = req.params.guid;
     try {
+        // await con.connect();
+        // var query = 'select * from course_manager where guid = ' + reqData +  ';'
+        // const result = await con.query(query);
+        // console.log("insert query", result.recordset);
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('courses');
+            const collection = db.collection('university');
 
             await collection.find({ guid: reqData }).toArray((err, result) => {
                 if (err) console.log('err', err);
@@ -150,20 +156,75 @@ router.get('/courses/:guid', verifyToken, async (req, res) => {
                 res.send({ error: null, result });
             })
         });
+        // res.send({ error: null, result: result.recordset});
         return { error: null, result: "Done" }
     } catch (error) {
         console.log(error.message);
         return { error: error.message, result: null }
     }
 })
-// delete Courses
-router.put('/courses/delete/:guid', verifyToken, async (req, res) => {
+// update University
+router.put('/university/:guid', verifyToken, async (req, res) => {
+    let reqGuid = req.params.guid;
+    try {
+        let foundUser = {}
+        MongoClient.connect(db_url, function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('university');
+
+            collection.findOne({ guid: reqGuid }, (err, result) => {
+                if (err) console.log('err', err);
+                console.log('result', result);
+                foundUser = result;
+                if (foundUser) {
+                    if (req.body.name) foundUser.universityname = req.body.name;
+                    if (req.body.city) foundUser.city = req.body.city;
+                    if (req.body.state) foundUser.state = req.body.state;
+                    if (req.body.country) foundUser.country = req.body.country;
+                    if (req.body.website_url) foundUser.website_url = req.body.website_url;
+                    if (req.body.description) foundUser.description = req.body.description;
+                    if (req.body.short_description) foundUser.short_description = req.body.short_description;
+                    const body = {
+                        $set: {
+                            "name": foundUser.name,
+                            "city": foundUser.city,
+                            "state": foundUser.state,
+                            "country": foundUser.country,
+                            "website_url": foundUser.website_url,
+                            "description": foundUser.description,
+                            "short_description": foundUser.short_description,
+                            "updated_at": new Date()
+                        }
+                    }
+
+                    collection.updateOne({ guid: reqGuid }, body, (err, result) => {
+                        if (err) console.log('err', err);
+                        console.log('result', result);
+                        res.send({ error: null, result });
+                    })
+
+                }
+            })
+        });
+
+
+
+        // res.send({ error: null, result: result.recordset});
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
+// delete University
+router.put('/university/delete/:guid', verifyToken, async (req, res) => {
     let reqGuid = req.params.guid;
     try {
         MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('courses');
+            const collection = db.collection('university');
             const body = {
                 $set: {
                     "status": false,
@@ -177,13 +238,15 @@ router.put('/courses/delete/:guid', verifyToken, async (req, res) => {
                 res.send({ error: null, result });
             })
         });
+
+
+
+        // res.send({ error: null, result: result.recordset});
         return { error: null, result: "Done" }
     } catch (error) {
         console.log(error.message);
         return { error: error.message, result: null }
     }
 })
-
-
 
 module.exports = router;

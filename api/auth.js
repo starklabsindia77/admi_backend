@@ -98,6 +98,39 @@ router.get("/auth/user", verifyToken, async (req, res) => {
     });
   }
 });
+
+router.get("/auth/userall", verifyToken, async (req, res) => {
+  try {
+    // let foundUser = await User.findOne({ _id: req.decoded._id }).populate(
+    //   "address"
+    // );
+    let foundUser = {};
+    MongoClient.connect(db_url, function (err, client) {
+      if (err) console.log('err', err);
+      const db = client.db("admission");
+      const collection = db.collection('User');
+
+      collection.find({}).toArray((err, result) => {
+        if (err) console.log('err', err);
+        console.log('result', result);
+        foundUser = result;
+        if (foundUser) {
+          res.json({
+            success: true,
+            user: foundUser
+          });
+        }
+      })
+    });
+
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
 router.get("/auth/user/:guid", verifyToken, async (req, res) => {
   let reqData = req.params.guid;
   try {

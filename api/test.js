@@ -1,13 +1,14 @@
 const router = require('express').Router();;
 const verifyToken = require("../middlewares/verify-token");
-
+// const moment = require("moment");
 var Guid = require('guid');
 const { ObjectId, MongoClient } = require('mongodb');
-
+// const _ = require('lodash');
+// const cors = require('cors')
 var Promise = require("bluebird");
 
 const config = require('../key');
-
+// const fs = require('fs');
 const AWS = require('aws-sdk');
 const multer = require('multer');
 Promise.longStackTraces();
@@ -38,13 +39,15 @@ const s3 = new AWS.S3({
     secretAccessKey: config.AWS_ACCESS_KEY_SECRET       // secretAccessKey is also store in .env file
 })
 
-// ADD Courses 
-router.post('/university/add', verifyToken, async (req, res) => {
+
+
+
+router.post('/course_manager', upload.single('images'), verifyToken, async (req, res) => {
     let reqData = req.body;
     var guidValue = Guid.create();
     console.log(reqData);
     let guid = guidValue.value;
-    // reqData.images = '';
+    reqData.images = '';
     try {
 
         // console.log("file detials", req.file)  // to check the data in the console that is being uploaded
@@ -77,21 +80,30 @@ router.post('/university/add', verifyToken, async (req, res) => {
 
         const body = {
             "guid": guid,
-            "name": reqData.name,
-            "country": reqData.country,
-            "state": reqData.state,
-            "city": reqData.city,
-            "website_url": reqData.website_url,
-            "description": reqData.description,
-            "short_description": reqData.short_description,
+            "course_name": reqData.course_name,
+            "isbn": reqData.isbn,
+            "skuid": reqData.skuid,
+            "hsn": reqData.hsn,
+            "ean": reqData.ean,
+            "upc": reqData.upc,
+            "manufacturer": reqData.manufacturer,
+            "dimensions": reqData.dimensions,
+            "attributes": reqData.attributes,
+            "cost_price": reqData.cost_price,
+            "listing_price": reqData.listing_price,
+            "map": reqData.map,
+            "msrp": reqData.msrp,
+            "Shipping_cost": reqData.Shipping_cost,
+            "images": reqData.images,
+            "course_quantity": reqData.course_quantity,
+            "course_description": reqData.course_description,
             "created_at": new Date(),
-            "updated_at": new Date(),
-            "status": true
+            "updated_at": new Date()
         }
         MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('university');
+            const collection = db.collection('course_manager');
 
             collection.insertOne(body, (err, result) => {
                 if (err) console.log('err', err);
@@ -107,17 +119,16 @@ router.post('/university/add', verifyToken, async (req, res) => {
         return { error: error.message, result: null }
     }
 })
-// update Courses
 
-// get All Courses
 router.get('/courses', verifyToken, async (req, res) => {
     try {
+        console.log('course call')
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('courses');
+            const collection = db.collection('course_manager');
 
-            await collection.find({ status: true }).toArray((err, result) => {
+            await collection.find({}).toArray((err, result) => {
                 if (err) console.log('err', err);
                 console.log('result', result.length);
                 if (result.length > 0) {
@@ -134,15 +145,17 @@ router.get('/courses', verifyToken, async (req, res) => {
         return { error: error.message, result: null }
     }
 })
-
-// get single courses
 router.get('/courses/:guid', verifyToken, async (req, res) => {
     let reqData = req.params.guid;
     try {
+        // await con.connect();
+        // var query = 'select * from course_manager where guid = ' + reqData +  ';'
+        // const result = await con.query(query);
+        // console.log("insert query", result.recordset);
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('courses');
+            const collection = db.collection('course_manager');
 
             await collection.find({ guid: reqData }).toArray((err, result) => {
                 if (err) console.log('err', err);
@@ -150,40 +163,88 @@ router.get('/courses/:guid', verifyToken, async (req, res) => {
                 res.send({ error: null, result });
             })
         });
+        // res.send({ error: null, result: result.recordset});
         return { error: null, result: "Done" }
     } catch (error) {
         console.log(error.message);
         return { error: error.message, result: null }
     }
 })
-// delete Courses
-router.put('/courses/delete/:guid', verifyToken, async (req, res) => {
+
+router.put('/courses/:guid', verifyToken, async (req, res) => {
     let reqGuid = req.params.guid;
     try {
+        let foundUser = {}
         MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
-            const collection = db.collection('courses');
-            const body = {
-                $set: {
-                    "status": false,
-                    "updated_at": new Date()
-                }
-            }
+            const collection = db.collection('course_manager');
 
-            collection.updateOne({ guid: reqGuid }, body, (err, result) => {
+            collection.findOne({ guid: reqGuid }, (err, result) => {
                 if (err) console.log('err', err);
                 console.log('result', result);
-                res.send({ error: null, result });
+                foundUser = result;
+                if (foundUser) {
+                    if (req.body.course_name) foundUser.course_name = req.body.course_name;
+                    if (req.body.isbn) foundUser.isbn = req.body.isbn;
+                    if (req.body.skuid) foundUser.skuid = req.body.skuid;
+                    if (req.body.hsn) foundUser.hsn = req.body.hsn;
+                    if (req.body.ean) foundUser.ean = req.body.ean;
+                    if (req.body.upc) foundUser.upc = req.body.upc;
+                    if (req.body.manufacturer) foundUser.manufacturer = req.body.manufacturer;
+                    if (req.body.dimensions) foundUser.dimensions = req.body.dimensions;
+                    if (req.body.attributes) foundUser.attributes = req.body.attributes;
+                    if (req.body.cost_price) foundUser.cost_price = req.body.cost_price;
+                    if (req.body.listing_price) foundUser.listing_price = req.body.listing_price;
+                    if (req.body.map) foundUser.map = req.body.map;
+                    if (req.body.msrp) foundUser.msrp = req.body.msrp;
+                    if (req.body.Shipping_cost) foundUser.Shipping_cost = req.body.Shipping_cost;
+                    if (req.body.course_quantity) foundUser.course_quantity = req.body.course_quantity;
+                    if (req.body.course_description) foundUser.course_description = req.body.course_description;
+                    const body = {
+                        $set: {
+                            "course_name": foundUser.course_name,
+                            "isbn": foundUser.isbn,
+                            "skuid": foundUser.skuid,
+                            "hsn": foundUser.hsn,
+                            "ean": foundUser.ean,
+                            "upc": foundUser.upc,
+                            "manufacturer": foundUser.manufacturer,
+                            "dimensions": foundUser.dimensions,
+                            "attributes": foundUser.attributes,
+                            "cost_price": foundUser.cost_price,
+                            "listing_price": foundUser.listing_price,
+                            "map": foundUser.map,
+                            "msrp": foundUser.msrp,
+                            "Shipping_cost": foundUser.Shipping_cost,
+                            "course_quantity": foundUser.course_quantity,
+                            "course_description": foundUser.course_description,
+                            "updated_at": new Date()
+                        }
+                    }
+                    MongoClient.connect(db_url, async function (err, client) {
+                        if (err) console.log('err', err);
+                        const db = client.db("admission");
+                        const collection = db.collection('course_manager');
+
+                        await collection.updateOne({ guid: reqGuid }, body, (err, result) => {
+                            if (err) console.log('err', err);
+                            console.log('result', result);
+                            res.send({ error: null, result });
+                        })
+                    });
+                }
             })
         });
+
+
+
+        // res.send({ error: null, result: result.recordset});
         return { error: null, result: "Done" }
     } catch (error) {
         console.log(error.message);
         return { error: error.message, result: null }
     }
 })
-
-
 
 module.exports = router;
