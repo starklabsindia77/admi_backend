@@ -133,6 +133,128 @@ router.post('/courses/add', verifyToken, async (req, res) => {
         return { error: error.message, result: null }
     }
 })
+
+router.post('/courses/csv', verifyToken, async (req, res) => {
+    let reqData = req.body;
+
+    // console.log("csv data", reqData);
+
+
+    try {
+        for (var i = 0; i < reqData.length; i++) {
+            var guidValue = Guid.create();
+            let guid = guidValue.value;
+            const body = {
+                "guid": guid,
+                "name": reqData[i].Course,
+                "applicationFees": reqData[i]['Application Fees'],
+                "studyLevel": reqData[i]['Study Level'],
+                "studyArea ": reqData[i]['Study Area'],
+                "initialDeposit": reqData[i]['Initial Deposit'],
+                "averageFees": reqData[i]['Average Fees'],
+                "intake": reqData[i].Intake,
+                "interviewRequired": reqData[i]['Interview Required'],
+                "interviewStage": reqData[i]['Interview stage'],
+                "minimumAcedemicScore": reqData[i]['Minimum 12th Acedemic score'],
+                "best_4_subject_percentage": reqData[i]['Best 4 subject percentage'],
+                "minimum_graduation_age": reqData[i]['Minimum Graduation %age'],
+                "numberofBacklogAccepted": reqData[i]['Number of Backlog accepted'],
+                "gap_acceptable": reqData[i]['Gap acceptable'],
+                "priority": reqData[i].Priority,
+                "withoutIelts": reqData[i]['Without Ielts'],
+                "withoutIeltsEnglish": reqData[i]['without ielts English %'],
+                "IeltsOverall": reqData[i]['Ielts Overall'],
+                "IeltsNotLessThan": reqData[i]['Ielts Not Less Than'],
+                "UKVIIeltsOverall": reqData[i]['UKVI Ielts Overall'],
+                "UKVIIeltsNotlessthan": reqData[i]['UKVI Ielts Not less than'],
+                "UKVI_PTE": reqData[i]['UKVI PTE'],
+                "PTEScore": reqData[i]['PTE Score'],
+                "PTENotlessthan": reqData[i]['PTE Not less than'],
+                "Duolingo": reqData[i].Duolingo,
+                "TOFEL": reqData[i].TOFEL,
+                "GRE": reqData[i].GRE,
+                "Scholarship": reqData[i].Scholarship,
+                "Remarks": reqData[i]['Remarks / Ristrictions'],
+                "TATforOfferletter": reqData[i]['TAT for Offer letter'],
+                "Work_Permit": reqData[i]['Work Permit'],
+                "durationOfWorkPermit": reqData[i]['Duration of Work Permit'],
+                "website_url": reqData[i]['Website URL'],
+                "Processing_Steps": reqData[i]['Processing Steps'],
+                "university": reqData[i]['Name of University/college'],
+                "Pathway": reqData[i].Pathway,
+                "previous_education_stream": reqData[i]['previous education stream'],
+                "Pathway_university": reqData[i]['Pathway university'],
+                "Pathway_course": reqData[i]['Pathway course'],
+                "created_at": new Date(),
+                "updated_at": new Date(),
+                "status": true
+            }
+
+            var guidUni = Guid.create();
+            let uni = guidUni.value;
+            const universityData = {
+                "guid": uni,
+                "name": reqData[i]['Name of University/college'],
+                "country": reqData[i].Country,
+                "state": reqData[i].Location,
+                "city": reqData[i]['Sub Location'],
+                "description": '',
+                "short_description": '',
+                "created_at": new Date(),
+                "updated_at": new Date(),
+                "status": true
+            }
+            MongoClient.connect(db_url, function (err, client) {
+                if (err) console.log('err', err);
+                const db = client.db("admission");
+                const collection = db.collection('courses');
+                collection.find({ name: body.name, university: body.university }).toArray((err, result) => {
+                    if (err) console.log('err', err);
+                    console.log('result courses length', result.length);
+                    if (result.length == 0 && body.name !== undefined) {
+                        collection.insertOne(body, (err, result) => {
+                            if (err) console.log('err', err);
+                            console.log('result................courses', result, i);
+                        })
+                    }
+                })
+                // collection.insertOne(body, (err, result) => {
+                //     if (err) console.log('err', err);
+                //     console.log('result', result);
+                // })
+
+                db.collection('university').find({ name: universityData.name, state: universityData.state, country: universityData.country }).toArray((err, result) => {
+                    if (err) console.log('err', err);
+                    console.log('result university length', result.length);
+                    if (result.length == 0 && universityData.name !== undefined) {
+                        db.collection('university').insertOne(universityData, (err, result) => {
+                            if (err) console.log('err', err);
+                            console.log('result................university', result, i);
+                        })
+                    }
+                })
+
+                // db.collection('university').insertOne(universityData, (err, result) => {
+                //     if (err) console.log('err', err);
+                //     console.log('result', result);
+                // })
+            });
+
+
+
+        }
+
+
+
+        res.send({ error: null, result: "Done" });
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+
+    // return { result: null }
+})
 // update Courses
 router.put('/courses/:guid', verifyToken, async (req, res) => {
     let reqGuid = req.params.guid;

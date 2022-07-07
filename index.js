@@ -24,6 +24,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // support parsing of application/json type post data
 
 const courseRoutes = require("./api/courses");
+const universityRoutes = require("./api/university");
 // const categoryRoutes = require("./api/category");
 // const ownerRoutes = require("./api/owner");
 const userRoutes = require("./api/auth");
@@ -34,6 +35,7 @@ const userRoutes = require("./api/auth");
 // const searchRoutes = require("./api/search");
 
 app.use("/api", courseRoutes);
+app.use("/api", universityRoutes);
 // app.use("/api", categoryRoutes);
 // app.use("/api", ownerRoutes);
 app.use("/api", userRoutes);
