@@ -149,7 +149,7 @@ router.post('/courses/csv', verifyToken, async (req, res) => {
                 "name": reqData[i].Course,
                 "applicationFees": reqData[i]['Application Fees'],
                 "studyLevel": reqData[i]['Study Level'],
-                "studyArea ": reqData[i]['Study Area'],
+                "studyArea": reqData[i]['Study Area'],
                 "initialDeposit": reqData[i]['Initial Deposit'],
                 "averageFees": reqData[i]['Average Fees'],
                 "intake": reqData[i].Intake,
@@ -373,8 +373,10 @@ router.get('/courses', verifyToken, async (req, res) => {
                 if (err) console.log('err', err);
                 console.log('result', result.length);
                 if (result.length > 0) {
+                    client.close();
                     res.send({ error: null, result });
                 } else {
+                    client.close();
                     res.send({ error: null, result: [] });
                 }
                 // res.send({ error: null, result });
@@ -387,6 +389,115 @@ router.get('/courses', verifyToken, async (req, res) => {
     }
 })
 
+// get All Courses With University Data
+
+router.get('/courses/all', verifyToken, async (req, res) => {
+    try {
+        MongoClient.connect(db_url, async function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('courses');
+            collection.aggregate([
+                {
+                    $lookup:
+                    {
+                        from: "university",
+                        localField: "university",
+                        foreignField: "name",
+                        as: "university"
+                    }
+                }
+            ]).toArray((err, result) => {
+                if (err) console.log('err', err);
+                console.log('result', result.length);
+                if (result.length > 0) {
+                    res.send({ error: null, result });
+                } else {
+                    res.send({ error: null, result: [] });
+                }
+                // res.send({ error: null, result });
+            })
+
+            // await collection.find({ status: true }).toArray((err, result) => {
+            //     if (err) console.log('err', err);
+            //     console.log('result', result.length);
+            //     if (result.length > 0) {
+            //         res.send({ error: null, result });
+            //     } else {
+            //         res.send({ error: null, result: [] });
+            //     }
+            //     // res.send({ error: null, result });
+            // })
+        });
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
+
+//get shortlist courses from
+router.get('/courses/wishlist', verifyToken, async (req, res) => {
+    try {
+        MongoClient.connect(db_url, async function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('courses');
+
+            await db.collection('wishlist').find({ userId: req.decoded._id }).toArray((err, result) => {
+                if (err) console.log('err', err);
+                let resultData = [];
+                if (result.length > 0) {
+                    const wishlist = result[0].wishlist
+                    for (let i = 0; i < wishlist.length; i++) {
+                        collection.aggregate([
+                            {
+                                $lookup:
+                                {
+                                    from: "university",
+                                    localField: "university",
+                                    foreignField: "name",
+                                    as: "university"
+                                },
+
+                            }, {
+                                $match: { guid: wishlist[i].courseId }
+                            }
+                        ]).toArray((err, result) => {
+                            if (err) console.log('err', err);
+                            if (result.length > 0) {
+                                resultData.push(result[0]);
+                            }
+                        })
+                        // collection.find({ guid: wishlist[i].courseId }).toArray((err, result) => {
+                        //     if (err) console.log('err', err);
+                        //     console.log('result', result.length);
+                        //     if (result.length > 0) {
+                        //         resultData.push(result[0]);
+                        //     }
+                        // })
+                    }
+                    // setTimeout(() => {
+                    //     console.log("resultData.....................", resultData);
+                    // }, 3000);
+
+                }
+                setTimeout(() => {
+                    res.send({ error: null, result: resultData });
+                }, 3000);
+
+            })
+
+
+            // client.close();
+
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
 // get single courses
 router.get('/courses/:guid', verifyToken, async (req, res) => {
     let reqData = req.params.guid;

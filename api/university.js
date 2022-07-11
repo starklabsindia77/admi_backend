@@ -4,7 +4,7 @@ const verifyToken = require("../middlewares/verify-token");
 var Guid = require('guid');
 const { ObjectId, MongoClient } = require('mongodb');
 // const _ = require('lodash');
-// const cors = require('cors')
+// const cors = require('cors');
 var Promise = require("bluebird");
 
 const config = require('../key');

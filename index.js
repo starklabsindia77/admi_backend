@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 const courseRoutes = require("./api/courses");
 const universityRoutes = require("./api/university");
-// const categoryRoutes = require("./api/category");
+const wishRoutes = require("./api/wishlist");
 // const ownerRoutes = require("./api/owner");
 const userRoutes = require("./api/auth");
 // const reviewRoutes = require("./api/review");
@@ -36,7 +36,7 @@ const userRoutes = require("./api/auth");
 
 app.use("/api", courseRoutes);
 app.use("/api", universityRoutes);
-// app.use("/api", categoryRoutes);
+app.use("/api", wishRoutes);
 // app.use("/api", ownerRoutes);
 app.use("/api", userRoutes);
 // app.use("/api", reviewRoutes);
