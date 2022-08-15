@@ -142,9 +142,10 @@ router.get("/auth/user/:guid", verifyToken, async (req, res) => {
       const db = client.db("admission");
       const collection = db.collection('User');
 
-      collection.findOne({ guid: reqData }, (err, result) => {
+      collection.findOne({ "guid": reqData  }, (err, result) => {
         if (err) console.log('err', err);
-        console.log('result', result);
+        // console.log('result', result);
+        delete result.password;
         foundUser = result;
         if (foundUser) {
           res.json({

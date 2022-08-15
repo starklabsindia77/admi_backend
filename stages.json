@@ -1,0 +1,61 @@
+[{
+  "country": "USA",
+  "Stages": [
+    { "value": "Assessment", "text": "Assessment" },
+    { "value": "Processing", "text": "Processing" },
+    { "value": "Submitted", "text": "Submitted" },
+    { "value": "Offer Letter", "text": "Offer Letter" },
+    { "value": "I20", "text": "I20" },
+    { "value": "Financial", "text": "Financial" },
+    { "value": "Bio Metric", "text": "Bio Metric" },
+    { "value": "file Lodge", "text": "file Lodge" },
+    { "value": "Visa", "text": "Visa" },
+    { "value": "Fee Paid", "text": "Fee Paid" },
+    { "value": "Enrollment", "text": "Enrollment" },
+    { "value": "Refused", "text": "Refused" },
+  ]  
+},
+{
+    "country": "UK",
+    "Stages": [
+      { "value": "Assessment", "text": "Assessment" },
+      { "value": "Processing", "text": "Processing" },
+      { "value": "Submitted", "text": "Submitted" },
+      { "value": "Offer Letter", "text": "Offer Letter" },
+      { "value": "Acceptance", "text": "Acceptance" },
+      { "value": "Cas", "text": "Cas" },
+      { "value": "file Lodge", "text": "file Lodge" },
+      { "value": "Bio Metric", "text": "Bio Metric" },      
+      { "value": "Visa", "text": "Visa" },
+      { "value": "Enrollment", "text": "Enrollment" },    
+      { "value": "Refused", "text": "Refused" },
+      { "value": "Fee Refund Processing", "text": "Fee Refund Processing" },
+      { "value": "IHS Refunded", "text": "IHS Refunded" },    
+      { "value": "Fee Refunded", "text": "Fee Refunded" },
+    ]   
+},
+{
+    "country": "Australia",
+    "Stages": [
+      { "value": "Assessment", "text": "Assessment" },
+      { "value": "Processing", "text": "Processing" },
+      { "value": "Submitted", "text": "Submitted" },
+      { "value": "Offer Letter", "text": "Offer Letter" },
+      { "value": "Financial", "text": "Financial" },
+      { "value": "Gte Processing", "text": "Gte Processing" },
+      { "value": "Gte Approved", "text": "Gte Approved" },
+      { "value": "Acceptance", "text": "Acceptance" },
+      { "value": "CoE", "text": "CoE" },
+      { "value": "file Lodge", "text": "file Lodge" },      
+      { "value": "Visa", "text": "Visa" },
+      { "value": "Enrollment", "text": "Enrollment" },    
+      { "value": "Refused", "text": "Refused" },
+      { "value": "Fee Refund Processing", "text": "Fee Refund Processing" },
+      { "value": "OSHC Refund Processing", "text": "OSHC Refund Processing" },
+      { "value": "Fee Refunded", "text": "Fee Refunded" },
+      { "value": "OSHC Refunded", "text": "OSHC Refunded" }, 
+      { "value": "onshore college change", "text": "onshore college change" },  
+    ]   
+}
+
+]

@@ -136,6 +136,33 @@ router.get('/university', verifyToken, async (req, res) => {
         return { error: error.message, result: null }
     }
 })
+router.get('/university/coun/:country', verifyToken, async (req, res) => {
+    let reqCountry = req.params.country;
+    try {
+        MongoClient.connect(db_url, async function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('university');
+            collection.createIndex({country:"text"})
+            await collection.find({country: reqCountry}).toArray((err, result) => {
+                if (err) console.log('err', err);
+                console.log('result', result.length);
+                if (result.length > 0) {
+                    client.close();
+                    res.send({ error: null, result });
+                } else {
+                    client.close();
+                    res.send({ error: null, result: [] });
+                }
+                // res.send({ error: null, result });
+            })
+        });
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
 
 // get single University
 router.get('/university/:guid', verifyToken, async (req, res) => {

@@ -142,6 +142,20 @@ router.post('/courses/csv', verifyToken, async (req, res) => {
 
     try {
         for (var i = 0; i < reqData.length; i++) {
+            var guidUni = Guid.create();
+            let uni = guidUni.value;
+            const universityData = {
+                "guid": uni,
+                "name": reqData[i]['Name of University/college'],
+                "country": reqData[i].Country,
+                "state": reqData[i].Location,
+                "city": reqData[i]['Sub Location'],
+                "description": '',
+                "short_description": '',
+                "created_at": new Date(),
+                "updated_at": new Date(),
+                "status": true
+            }
             var guidValue = Guid.create();
             let guid = guidValue.value;
             const body = {
@@ -180,7 +194,7 @@ router.post('/courses/csv', verifyToken, async (req, res) => {
                 "durationOfWorkPermit": reqData[i]['Duration of Work Permit'],
                 "website_url": reqData[i]['Website URL'],
                 "Processing_Steps": reqData[i]['Processing Steps'],
-                "university": reqData[i]['Name of University/college'],
+                "university": universityData,
                 "Pathway": reqData[i].Pathway,
                 "previous_education_stream": reqData[i]['previous education stream'],
                 "Pathway_university": reqData[i]['Pathway university'],
@@ -190,20 +204,7 @@ router.post('/courses/csv', verifyToken, async (req, res) => {
                 "status": true
             }
 
-            var guidUni = Guid.create();
-            let uni = guidUni.value;
-            const universityData = {
-                "guid": uni,
-                "name": reqData[i]['Name of University/college'],
-                "country": reqData[i].Country,
-                "state": reqData[i].Location,
-                "city": reqData[i]['Sub Location'],
-                "description": '',
-                "short_description": '',
-                "created_at": new Date(),
-                "updated_at": new Date(),
-                "status": true
-            }
+            
             MongoClient.connect(db_url, function (err, client) {
                 if (err) console.log('err', err);
                 const db = client.db("admission");
@@ -362,7 +363,7 @@ router.put('/courses/:guid', verifyToken, async (req, res) => {
     }
 })
 // get All Courses
-router.get('/courses', verifyToken, async (req, res) => {
+router.get('/courses/public', async (req, res) => {
     try {
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
@@ -389,27 +390,75 @@ router.get('/courses', verifyToken, async (req, res) => {
     }
 })
 
-// get All Courses With University Data
-
-router.get('/courses/all', verifyToken, async (req, res) => {
+router.get('/courses', verifyToken, async (req, res) => {
     try {
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
             const collection = db.collection('courses');
-            collection.aggregate([
-                {
-                    $lookup:
-                    {
-                        from: "university",
-                        localField: "university",
-                        foreignField: "name",
-                        as: "university"
-                    }
-                }
-            ]).toArray((err, result) => {
+
+            await collection.find({ status: true }).toArray((err, result) => {
                 if (err) console.log('err', err);
                 console.log('result', result.length);
+                if (result.length > 0) {
+                    client.close();
+                    res.send({ error: null, result });
+                } else {
+                    client.close();
+                    res.send({ error: null, result: [] });
+                }
+                // res.send({ error: null, result });
+            })
+        });
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
+router.get('/courses/uni/:uni', verifyToken, async (req, res) => {
+    let reqCountry = req.params.uni;
+    try {
+        MongoClient.connect(db_url, async function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('courses');
+
+            await collection.find({"university.name": reqCountry}).toArray((err, result) => {
+                if (err) console.log('err', err);
+                console.log('result', result.length);
+                if (result.length > 0) {
+                    client.close();
+                    res.send({ error: null, result });
+                } else {
+                    client.close();
+                    res.send({ error: null, result: [] });
+                }
+                // res.send({ error: null, result });
+            })
+        });
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
+
+
+// get All Courses With University Data
+
+router.post('/courses/all', verifyToken, async (req, res) => {
+    let reqData = req.body;
+    console.log('country', reqData);
+    try {
+        MongoClient.connect(db_url, async function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('courses');
+            db.collection('university').createIndex({country:"text"})
+            collection.find({$and: [ {"university.country" : reqData.country}, {$text: { $search: reqData.studyArea}}  ] }).toArray((err, result) => {
+                if (err) console.log('err', err);
+                console.log('courses result', result.length);
                 if (result.length > 0) {
                     res.send({ error: null, result });
                 } else {
