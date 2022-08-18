@@ -147,7 +147,8 @@ router.post('/application/update', verifyToken, async (req, res) => {
         const body = {
             $set: {
                 "updated_at": new Date(),
-                "status": reqData.value
+                "status": reqData.value,
+                "Application_Status": reqData.appStatus, 
             }
         }
         MongoClient.connect(db_url, function (err, client) {
