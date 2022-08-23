@@ -111,9 +111,8 @@ router.post('/university/add', verifyToken, async (req, res) => {
 
 // get  all University
 
-router.get('/university', verifyToken, async (req, res) => {
+router.get('/university', async (req, res) => {
     try {
-        console.log('course call')
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
