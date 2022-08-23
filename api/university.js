@@ -111,7 +111,7 @@ router.post('/university/add', verifyToken, async (req, res) => {
 
 // get  all University
 
-router.get('/university', async (req, res) => {
+router.get('/university', verifyToken, async (req, res) => {
     try {
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
@@ -120,7 +120,31 @@ router.get('/university', async (req, res) => {
 
             await collection.find({ status: true }).toArray((err, result) => {
                 if (err) console.log('err', err);
-                console.log('result', result.length);
+                // console.log('result', result.length);
+                if (result.length > 0) {
+                    res.send({ error: null, result });
+                } else {
+                    res.send({ error: null, result: [] });
+                }
+                // res.send({ error: null, result });
+            })
+        });
+        return { error: null, result: "Done" }
+    } catch (error) {
+        console.log(error.message);
+        return { error: error.message, result: null }
+    }
+})
+router.get('/universitypublic',  async (req, res) => {
+    try {
+        MongoClient.connect(db_url, async function (err, client) {
+            if (err) console.log('err', err);
+            const db = client.db("admission");
+            const collection = db.collection('university');
+
+            await collection.find({ status: true }).toArray((err, result) => {
+                if (err) console.log('err', err);
+                // console.log('result', result.length);
                 if (result.length > 0) {
                     res.send({ error: null, result });
                 } else {
