@@ -42,7 +42,7 @@ const s3 = new AWS.S3({
 
 
 
-router.post('/course_manager', upload.single('images'), verifyToken, async (req, res) => {
+router.post('/course_manager', upload.single('images'),  async (req, res) => {
     let reqData = req.body;
     var guidValue = Guid.create();
     console.log(reqData);
