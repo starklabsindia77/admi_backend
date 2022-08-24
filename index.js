@@ -14,7 +14,7 @@ const app = express();
 dotenv.config();
 
 app.use(cors({
-  origin: ['https://admi-frontend.vercel.app/', 'https://www.google.com/']
+  origin: 'https://admi-frontend.vercel.app/'
 }));
 app.use(cookieParser());
 //to not get any deprecation warning or error
