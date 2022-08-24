@@ -23,7 +23,6 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
-app.use(allowCrossDomain)
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.json({ limit: '50mb' }));
