@@ -2,6 +2,7 @@ const router = require("express").Router();
 const verifyToken = require("../middlewares/verify-token");
 const config = require('../key');
 var Guid = require('guid');
+const cors = require('cors')
 const { ObjectId, MongoClient } = require('mongodb');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
@@ -276,7 +277,7 @@ router.put("/auth/user/:guid", verifyToken, async (req, res) => {
 });
 
 /* Login Route */
-router.post("/auth/login", async (req, res) => {
+router.post("/auth/login", cors(), async (req, res) => {
   try {
 
     let foundUser = {};
