@@ -13,9 +13,8 @@ Promise.longStackTraces();
 const app = express();
 dotenv.config();
 
-app.use(cors({
-  origin: 'https://admi-frontend.vercel.app/'
-}));
+app.use(cors());
+app.options('*', cors());
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'example.com');
