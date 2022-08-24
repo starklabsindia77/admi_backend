@@ -16,6 +16,12 @@ dotenv.config();
 app.use(cors({
   origin: 'https://admi-frontend.vercel.app/'
 }));
+app.use((req,res, next)=>{
+  res.setHeader('Access-Control-Allow-Origin',"https://admi-frontend.vercel.app/");
+  res.setHeader('Access-Control-Allow-Headers',"*");
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+})
 app.use(cookieParser());
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data
