@@ -13,7 +13,9 @@ Promise.longStackTraces();
 const app = express();
 dotenv.config();
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://admi-frontend.vercel.app/', 'https://www.google.com/']
+}));
 app.use(cookieParser());
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data
