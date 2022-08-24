@@ -13,16 +13,14 @@ Promise.longStackTraces();
 const app = express();
 dotenv.config();
 
-app.use(cors());
-app.options('*', cors());
-//CORS middleware
-var allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'https://admi-frontend.vercel.app/');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-  next();
+// app.use(cors());
+var corsOptions = {
+  origin: 'https://admi-frontend.vercel.app/',
+  optionsSuccessStatus: 200, // For legacy browser support
+  methods: "GET, PUT, POST, DELETE"
 }
+
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 app.use(allowCrossDomain)
