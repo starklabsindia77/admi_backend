@@ -16,13 +16,17 @@ dotenv.config();
 app.use(cors({
   origin: 'https://admi-frontend.vercel.app/'
 }));
-app.use((req,res, next)=>{
-  res.setHeader('Access-Control-Allow-Origin',"https://admi-frontend.vercel.app/");
-  res.setHeader('Access-Control-Allow-Headers',"*");
-  res.header('Access-Control-Allow-Credentials', true);
+//CORS middleware
+var allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'example.com');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+
   next();
-})
+}
+
 app.use(cookieParser());
+app.use(allowCrossDomain)
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.json({ limit: '50mb' }));
