@@ -12,15 +12,15 @@ Promise.longStackTraces();
 
 const app = express();
 dotenv.config();
-
+app.use(cors({ origin : '*'}))
 // app.use(cors());
-var corsOptions = {
-  origin: 'https://admi-frontend.vercel.app/',
-  optionsSuccessStatus: 200, // For legacy browser support
-  methods: "GET, PUT, POST, DELETE"
-}
+// var corsOptions = {
+//   origin: 'https://admi-frontend.vercel.app/',
+//   optionsSuccessStatus: 200, // For legacy browser support
+//   methods: "GET, PUT, POST, DELETE"
+// }
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.use(cookieParser());
 //to not get any deprecation warning or error
