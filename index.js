@@ -13,15 +13,6 @@ Promise.longStackTraces();
 const app = express();
 dotenv.config();
 app.use(cors({ origin : '*'}))
-// app.use(cors());
-// var corsOptions = {
-//   origin: 'https://admi-frontend.vercel.app/',
-//   optionsSuccessStatus: 200, // For legacy browser support
-//   methods: "GET, PUT, POST, DELETE"
-// }
-
-// app.use(cors(corsOptions));
-
 app.use(cookieParser());
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data
@@ -37,11 +28,7 @@ const wishRoutes = require("./api/wishlist");
 const roleRoutes = require("./api/role");
 const userRoutes = require("./api/auth");
 const applicationRoutes = require("./api/application");
-// const reviewRoutes = require("./api/review");
-// const addressRoutes = require("./api/address");
-// const paymentRoutes = require("./api/payment");
-// const orderRoutes = require("./api/order");
-// const searchRoutes = require("./api/search");
+const ProfileRoutes = require("./api/profile");
 
 app.use("/api", courseRoutes);
 app.use("/api", universityRoutes);
@@ -49,11 +36,7 @@ app.use("/api", wishRoutes);
 app.use("/api", roleRoutes);
 app.use("/api", userRoutes);
 app.use("/api", applicationRoutes);
-// app.use("/api", reviewRoutes);
-// app.use("/api", addressRoutes);
-// app.use("/api", paymentRoutes);
-// app.use("/api", orderRoutes);
-// app.use("/api", searchRoutes);
+app.use("/api", ProfileRoutes);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
