@@ -278,7 +278,7 @@ router.put("/auth/user/:guid", verifyToken, async (req, res) => {
 
 /* Login Route */
 router.post("/auth/login", async (req, res) => {
-  console.log("login", req)
+  console.log("login varun", req.body)
   try {
 
     let foundUser = {};
