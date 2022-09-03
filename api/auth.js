@@ -28,6 +28,9 @@ router.post("/auth/signup", async (req, res) => {
         "password": hashedPassword,
         "contact": req.body.contact,
         "role": req.body.role,
+        "centerName": req.body.centerName,
+        "centerCity": req.body.centerCity,
+        "countries": req.body.countries,
         "created_at": new Date(),
         "updated_at": new Date()
       }
@@ -276,6 +279,8 @@ router.put("/auth/user/:guid", verifyToken, async (req, res) => {
   }
 });
 
+
+
 /* Login Route */
 router.post("/auth/login", async (req, res) => {
   console.log("login varun", req.body)
@@ -311,6 +316,37 @@ router.post("/auth/login", async (req, res) => {
             });
           }
         }
+      })
+    });
+
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
+
+
+// delete user from
+
+router.delete("/auth/user/:guid", verifyToken, async (req, res) => {
+  let reqData = req.params.guid;
+  try {
+    // let foundUser = await User.findOne({ _id: req.decoded._id });
+    MongoClient.connect(db_url, function (err, client) {
+      if (err) console.log('err', err);
+      const db = client.db("admission");
+      const collection = db.collection('User');
+
+      collection.deleteOne({ guid: reqData }, async (err, result) => {
+        if (err) console.log('err', err);
+        console.log('result', result);
+        res.json({
+          success: true,
+          message: "Successfully Delete"
+        });
       })
     });
 

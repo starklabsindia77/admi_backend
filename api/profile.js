@@ -70,20 +70,17 @@ router.post('/profile/add', verifyToken, async (req, res) => {
 router.put('/profile/update/:email', verifyToken, async (req, res) => {
     let emailId = req.params.email;
     let reqData = req.body;
-    console.log("info", reqData);
     try {
-
-        const body = {
-            $set: {
-                "updated_at": new Date(),
-            }
-        }
         MongoClient.connect(db_url, function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
             const collection = db.collection('profile');
-
-            collection.updateOne({ email: emailId }, body, (err, result) => {
+            collection.updateOne({ email: emailId }, {
+                $set: {
+                    ...reqData, 
+                    "updated_at": new Date(),
+                }
+            }, (err, result) => {
                 if (err) console.log('err', err);
                 console.log('result', result);
             })
