@@ -224,7 +224,7 @@ router.get("/auth/user/:guid", verifyToken, async (req, res) => {
       collection.findOne({ "guid": reqData  }, (err, result) => {
         if (err) console.log('err', err);
         // console.log('result', result);
-        delete result.password;
+        result.password = null ;
         foundUser = result;
         if (foundUser) {
           res.json({
