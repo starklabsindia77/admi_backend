@@ -48,23 +48,76 @@ router.post('/application/add', verifyToken, async (req, res) => {
     console.log(reqData);
     let guid = guidValue.value;
     try {
-
-        const body = {
-            ...reqData,
-            "guid": guid,
-            "created_at": new Date(),
-            "updated_at": new Date(),
-            "status": 'new'
-        }
         MongoClient.connect(db_url, function (err, client) {
-            if (err) console.log('err', err);
+            
             const db = client.db("admission");
+            const centerCollection = db.collection('Centers');
+            const profileCollection = db.collection('profile');
+            const UserCollection = db.collection('User');
+            let centerList=[]
+          profileCollection.findOne({email:reqData.ApplicationInfo.email}, async (err, result) => {
+                
+                console.log("profileList::",result)
+           if(result)
+           {
+            
+               let searchCity= ".*" + result.city + ".*";
+               console.log("searchCity::",searchCity)
+
+          centerCollection.find({city:result.city}).toArray((err, result) => {
+            if(result)
+            {
+             
+            centerList=result
+        }
+        let centerID=result&&result[0]._id.toString()
+        //    console.log("centerList::",result)
+        console.log("centerList::",centerList)     
+        UserCollection.findOne({"centerName._id":centerID,role:"manager"}, async (err, resultmng)  => {
+            console.log("resultmng::",resultmng)
+            
+if(resultmng)
+{
+    reqData["managerId"]= resultmng._id.toString()
+}
+else{
+    reqData["managerId"]= ""
+}
+if(centerList&&centerList.length===1)
+{
+    reqData["centerId"]=centerList[0]._id.toString()
+  
+     
+ reqData["unAssigned"]=false
+ 
+ 
+}
+else
+{
+ reqData["centerId"]=""
+ reqData["unAssigned"]=true
+ reqData["managerId"]=""
+}
+const body = {
+ ...reqData,
+ "guid": guid,
+ "created_at": new Date(),
+ "updated_at": new Date(),
+ "status": 'new'
+}
+console.log("reqData:::",body)
+            if (err) console.log('err', err);
             const collection = db.collection('application');
 
-            collection.insertOne(body, (err, result) => {
-                if (err) console.log('err', err);
-                console.log('result', result);
-            })
+            // collection.insertOne(body, (err, result) => {
+            //     if (err) console.log('err', err);
+            //     console.log('result', result);
+            // })
+})
+       })
+           }
+})
+
         });
 
 

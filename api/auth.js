@@ -68,6 +68,81 @@ router.post("/auth/signup", async (req, res) => {
   }
 });
 
+// ##################################Center create and get list also  Start #######################################
+
+router.post("/auth/createCenter", async (req, res) => {
+  try {
+    console.log("req:::",req)
+let center_body={
+  centerName:req.body.centerName,
+  pinCode:req.body.pinCode,
+  state:req.body.state,
+  city:req.body.city
+
+}
+
+MongoClient.connect(db_url, function (err, client) {
+  if (err) console.log('err', err);
+  const db = client.db("admission");
+  const collection = db.collection('Centers');
+
+  collection.insertOne(center_body, (err, result) => {
+    if (err) console.log('err', err);
+    console.log('result', result);
+    inserted = true;
+    if (inserted) {
+      // let token = jwt.sign(center_body, config.SECRET, {
+      //   expiresIn: 604800 // 1 week
+      // }
+      // );
+
+      res.json({
+        success: true,
+        // token: token,
+        message: "Successfully created a new center"
+      });
+    }
+  })
+});
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message
+      });
+    }
+
+});
+
+router.get("/auth/allCenter", verifyToken, async (req, res) => {
+  try {
+    let foundUser = {};
+    MongoClient.connect(db_url, function (err, client) {
+      if (err) console.log('err', err);
+      const db = client.db("admission");
+      const collection = db.collection('Centers');
+      collection.find({}).toArray((err, result) => {
+        if (err) console.log('err', err);
+        console.log('result', result);
+        // foundCenter = result;
+        // if (result) {
+          res.json({
+            results: result
+          });
+        // }
+      })
+    });
+
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
+
+// ##################################Center create and get list also  End #######################################
+
 /* Profile Route */
 router.get("/auth/user", verifyToken, async (req, res) => {
   try {
@@ -292,7 +367,8 @@ router.post("/auth/login", async (req, res) => {
       const db = client.db("admission");
       const collection = db.collection('User');
       console.log('user', req.body.email)
-      collection.findOne({ email: req.body.email }, async (err, result) => {
+      let searchEmail= ".*" + req.body.email + ".*";
+      collection.findOne({ email:{$regex:searchEmail, $options: 'i' }  }, async (err, result) => {
         if (err) console.log('err', err);
         foundUser = result;
         console.log('found user123', foundUser);
