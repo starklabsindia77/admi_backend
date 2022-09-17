@@ -7,6 +7,8 @@ const { ObjectId, MongoClient } = require('mongodb');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const db_url = config.dbstring;
+const ChatAuthKey = config.cometAuthKey
+
 
 
 /* Signup Route */
@@ -48,6 +50,8 @@ router.post("/auth/signup", async (req, res) => {
             let token = jwt.sign(user_body, config.SECRET, {
               expiresIn: 604800 // 1 week
             });
+            
+            
 
             res.json({
               success: true,
@@ -223,8 +227,10 @@ router.get("/auth/user/:guid", verifyToken, async (req, res) => {
 
       collection.findOne({ "guid": reqData  }, (err, result) => {
         if (err) console.log('err', err);
-        // console.log('result', result);
-        result.password = null ;
+        if(result !== null){
+          delete result.password
+        }
+        // result["password"] = null ;
         foundUser = result;
         if (foundUser) {
           res.json({
