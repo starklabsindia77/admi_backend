@@ -12,6 +12,7 @@ Promise.longStackTraces();
 
 const app = express();
 dotenv.config();
+app.use(cors())
 // app.use(cors({ origin : '*'}))
 app.use(cookieParser());
 //to not get any deprecation warning or error
@@ -52,7 +53,6 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-app.use(cors())
 
 
 
