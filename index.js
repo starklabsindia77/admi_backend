@@ -12,7 +12,7 @@ Promise.longStackTraces();
 
 const app = express();
 dotenv.config();
-app.use(cors({ origin : '*'}))
+// app.use(cors({ origin : '*'}))
 app.use(cookieParser());
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data
@@ -52,6 +52,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
+app.use(cors())
 
 
 
