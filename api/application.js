@@ -109,10 +109,10 @@ console.log("reqData:::",body)
             if (err) console.log('err', err);
             const collection = db.collection('application');
 
-            // collection.insertOne(body, (err, result) => {
-            //     if (err) console.log('err', err);
-            //     console.log('result', result);
-            // })
+            collection.insertOne(body, (err, result) => {
+                if (err) console.log('err', err);
+                console.log('result', result);
+            })
 })
        })
            }
