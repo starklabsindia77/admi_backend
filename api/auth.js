@@ -7,6 +7,8 @@ const { ObjectId, MongoClient } = require('mongodb');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const db_url = config.dbstring;
+const ChatAuthKey = config.cometAuthKey
+
 
 
 /* Signup Route */
@@ -49,6 +51,7 @@ router.post("/auth/signup", async (req, res) => {
               expiresIn: 604800 // 1 week
             });
             
+
                 res.json({
                   success: true,
                   token: token,
@@ -58,6 +61,8 @@ router.post("/auth/signup", async (req, res) => {
                   }
                 });
               
+
+        
           }
         })
       });
@@ -225,6 +230,7 @@ router.post("/auth/roleUser", verifyToken, async (req, res) => {
       if (err) console.log('err', err);
       const db = client.db("admission");
       const collection = db.collection('User');
+
       let roleId=""
 if(reqData.role=="Agent")
 {
