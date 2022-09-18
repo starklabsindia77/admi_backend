@@ -48,12 +48,16 @@ router.post("/auth/signup", async (req, res) => {
             let token = jwt.sign(user_body, config.SECRET, {
               expiresIn: 604800 // 1 week
             });
-
-            res.json({
-              success: true,
-              token: token,
-              message: "Successfully created a new user"
-            });
+            
+                res.json({
+                  success: true,
+                  token: token,
+                  message: "Successfully created a new user",
+                  result:{
+                    ...user_body,_id:result.insertedId.toString()
+                  }
+                });
+              
           }
         })
       });
@@ -209,8 +213,9 @@ router.get("/auth/userall", verifyToken, async (req, res) => {
     });
   }
 });
-router.get("/auth/user/:guid", verifyToken, async (req, res) => {
-  let reqData = req.params.guid;
+router.post("/auth/roleUser", verifyToken, async (req, res) => {
+  let reqData = req.body;
+  // console.log("reqData:::",reqData)
   try {
     // let foundUser = await User.findOne({ _id: req.decoded._id }).populate(
     //   "address"
@@ -220,19 +225,38 @@ router.get("/auth/user/:guid", verifyToken, async (req, res) => {
       if (err) console.log('err', err);
       const db = client.db("admission");
       const collection = db.collection('User');
-
-      collection.findOne({ "guid": reqData  }, (err, result) => {
-        if (err) console.log('err', err);
-        // console.log('result', result);
-        result.password = null ;
-        foundUser = result;
-        if (foundUser) {
-          res.json({
-            success: true,
-            result: foundUser
-          });
-        }
-      })
+      let roleId=""
+if(reqData.role=="Agent")
+{
+  roleId=reqData.agentId
+  collection.findOne({ "_id": roleId  }, (err, result) => {
+    if (err) console.log('err', err);
+    // console.log('result', result);
+    // result.password = "" ;
+    foundUser = result;
+    if (foundUser) {
+      res.json({
+        success: true,
+        result: foundUser
+      });
+    }
+  })
+}
+else if(reqData.role=="Student")
+{
+  collection.findOne({ "_id": roleId  }, (err, result) => {
+    if (err) console.log('err', err);
+    // console.log('result', result);
+    // result.password = "" ;
+    foundUser = result;
+    if (foundUser) {
+      res.json({
+        success: true,
+        result: foundUser
+      });
+    }
+  })
+}
     });
 
 

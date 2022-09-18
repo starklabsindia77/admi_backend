@@ -55,24 +55,24 @@ router.post('/application/add', verifyToken, async (req, res) => {
             const profileCollection = db.collection('profile');
             const UserCollection = db.collection('User');
             let centerList=[]
-          profileCollection.findOne({email:reqData.ApplicationInfo.email}, async (err, result) => {
+          profileCollection.findOne({email:reqData.studentInfo.email}, async (err, result) => {
                 
                 console.log("profileList::",result)
-           if(result)
-           {
+        //    if(result)
+        //    {
             
-               let searchCity= ".*" + result.city + ".*";
+               let searchCity=  result&&result.city
                console.log("searchCity::",searchCity)
 
-          centerCollection.find({city:result.city}).toArray((err, result) => {
+          centerCollection.find({city:searchCity}).toArray((err, result) => {
             if(result)
             {
              
             centerList=result
         }
-        let centerID=result&&result[0]._id.toString()
-        //    console.log("centerList::",result)
         console.log("centerList::",centerList)     
+        let centerID=result&&result.length>0?result[0]._id.toString():""
+        //    console.log("centerList::",result)
         UserCollection.findOne({"centerName._id":centerID,role:"manager"}, async (err, resultmng)  => {
             console.log("resultmng::",resultmng)
             
@@ -115,7 +115,7 @@ console.log("reqData:::",body)
             })
 })
        })
-           }
+        //    }
 })
 
         });
@@ -130,18 +130,33 @@ console.log("reqData:::",body)
 })
 
 // get all applications from
-router.get('/application', verifyToken, async (req, res) => {
-   
+router.post('/application', verifyToken, async (req, res) => {
+   console.log("req::",req.body)
     try {
         MongoClient.connect(db_url, async function (err, client) {
             if (err) console.log('err', err);
             const db = client.db("admission");
             const collection = db.collection('application');
+           if(req.body.role==="Agent")
+           {
 
-            await collection.find().toArray((err, result) => {
+               await collection.find({AgentId:req.body.id}).toArray((err, result) => {
+                   if (err) console.log('err', err);
+                   res.send({ error: null, result });
+               })
+           }else if(req.body.role==="admin")
+           {
+            await collection.find({}).toArray((err, result) => {
                 if (err) console.log('err', err);
                 res.send({ error: null, result });
             })
+           }else if(req.body.role==="Student")
+           {
+            await collection.find({"studentInfo._id":req.body.id}).toArray((err, result) => {
+                if (err) console.log('err', err);
+                res.send({ error: null, result });
+            })
+           }
         });
         return { error: null, result: "Done" }
     } catch (error) {
