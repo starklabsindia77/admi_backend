@@ -34,7 +34,8 @@ router.post("/auth/signup", async (req, res) => {
         "centerCity": req.body.centerCity,
         "countries": req.body.countries,
         "created_at": new Date(),
-        "updated_at": new Date()
+        "updated_at": new Date(),
+        "agentId":req.body.AgentId&&req.body.AgentId?req.body.AgentId:null
       }
 
       MongoClient.connect(db_url, function (err, client) {
